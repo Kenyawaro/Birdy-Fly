@@ -10,13 +10,13 @@ WINDOW_HEIGHT = 600
 WINDOW = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Geometry Dash")
 
-# Couleurs
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
-# Variables du joueur
+# Chargement de l'image du joueur
+player_image = pygame.image.load("c:\Users\khoareau\Downloads\bird test.png")  # Remplacez "nom_de_l_image.png" par le nom de votre image
 player_width = 50
 player_height = 50
+player_image = pygame.transform.scale(player_image, (player_width, player_height))  # Redimensionner l'image aux dimensions du joueur
+
+# Variables du joueur
 player_x = 50
 player_y = WINDOW_HEIGHT // 2 - player_height // 2
 player_velocity = 10
@@ -33,16 +33,19 @@ obstacle_gap = 200
 score = 0
 font = pygame.font.Font(None, 36)
 
+# Compteur de collisions
+collision_counter = 0
+
 # Fonction pour afficher le score
 def display_score():
-    score_text = font.render("Score: " + str(score), True, BLACK)
+    score_text = font.render("Score: " + str(score), True, (0, 0, 0))
     WINDOW.blit(score_text, (10, 10))
 
 # Boucle principale du jeu
 clock = pygame.time.Clock()
 running = True
 while running:
-    WINDOW.fill(WHITE)
+    WINDOW.fill((255, 255, 255))
     
     # Gestion des événements
     for event in pygame.event.get():
@@ -62,22 +65,24 @@ while running:
     # Gestion des collisions
     if player_x + player_width > obstacle_x and player_x < obstacle_x + obstacle_width:
         if player_y < obstacle_height or player_y + player_height > obstacle_height + obstacle_gap:
-            running = False
-        else:
-            score += 1
+            # Collision détectée
+            collision_counter += 1
+            if collision_counter >= 3:
+                running = False  # Le joueur meurt après 3 collisions
+            else:
+                score += 1
 
     # Affichage du joueur
-    pygame.draw.rect(WINDOW, BLACK, (player_x, player_y, player_width, player_height))
+    WINDOW.blit(player_image, (player_x, player_y))
 
     # Affichage de l'obstacle
-    pygame.draw.rect(WINDOW, BLACK, (obstacle_x, 0, obstacle_width, obstacle_height))
-    pygame.draw.rect(WINDOW, BLACK, (obstacle_x, obstacle_height + obstacle_gap, obstacle_width, WINDOW_HEIGHT - obstacle_height - obstacle_gap))
+    pygame.draw.rect(WINDOW, (0, 0, 0), (obstacle_x, 0, obstacle_width, obstacle_height))
+    pygame.draw.rect(WINDOW, (0, 0, 0), (obstacle_x, obstacle_height + obstacle_gap, obstacle_width, WINDOW_HEIGHT - obstacle_height - obstacle_gap))
 
     # Réinitialisation de l'obstacle lorsqu'il sort de l'écran
     if obstacle_x + obstacle_width < 0:
         obstacle_x = WINDOW_WIDTH
         obstacle_height = random.randint(50, 300)
-        score += 1
 
     # Affichage du score
     display_score()
@@ -87,6 +92,7 @@ while running:
 
 # Fermeture de Pygame
 pygame.quit()
+
    
 
  
