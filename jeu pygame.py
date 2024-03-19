@@ -33,6 +33,9 @@ obstacle_gap = 200
 score = 0
 font = pygame.font.Font(None, 36)
 
+# Compteur de collisions
+collision_counter = 0
+
 # Fonction pour afficher le score
 def display_score():
     score_text = font.render("Score: " + str(score), True, BLACK)
@@ -62,9 +65,14 @@ while running:
     # Gestion des collisions
     if player_x + player_width > obstacle_x and player_x < obstacle_x + obstacle_width:
         if player_y < obstacle_height or player_y + player_height > obstacle_height + obstacle_gap:
-            running = False
-        else:
-            score += 1
+            # Collision détectée
+            collision_counter += 1
+            if collision_counter >= 3:
+                running = False  # Le joueur meurt après 3 collisions
+            else:
+                obstacle_x = WINDOW_WIDTH
+                obstacle_height = random.randint(50, 300)
+                score += 1
 
     # Affichage du joueur
     pygame.draw.rect(WINDOW, BLACK, (player_x, player_y, player_width, player_height))
@@ -87,6 +95,7 @@ while running:
 
 # Fermeture de Pygame
 pygame.quit()
+
    
 
  
